@@ -34,9 +34,29 @@ const maxBlogs = (blogs) => {
     }
   }
 }
+const mostLikes = (blogs) => {
+  const likes = blogs.reduce((accObj, blog) => {
+    if (!accObj[blog.author]) {
+      accObj[blog.author] = blog.likes
+    } else {
+      accObj[blog.author] += blog.likes
+    }
+    return accObj
+  }, {})
+  const max = Math.max(...Object.values(likes))
+  for (const author in likes) {
+    if (likes[author] === max) {
+      return {
+        author,
+        likes: likes[author],
+      }
+    }
+  }
+}
 module.exports = {
   dummy,
   totalLikes,
   maxLikes,
   maxBlogs,
+  mostLikes,
 }
