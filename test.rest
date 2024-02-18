@@ -3,10 +3,11 @@ POST  http://localhost:3003/api/blogs HTTP/1.1
 content-type: application/json
 
 {
-  "title": "FUBAO2IS CUTE",
+  "title": "FUBAOdd CUTE",
   "author": "FUBAO2",
   "url": "WWW.FUBAO2.COM",
-  "likes": 100
+  "likes": 16
+   
     
 }
 
@@ -21,4 +22,22 @@ GET http://localhost:3003/api/blogs HTTP/1.1
 # ###
 # DELETE http://localhost:3003/api/blogs/65bc684f14de1456c64749bc HTTP/1.1
 
+###
+POST http://localhost:3003/api/users/  HTTP/1.1
+Content-Type: application/json
 
+{
+    "username": "root2",
+    "name": "Superuse2r",
+    "password": "salainen2"
+}
+
+###
+POST http://localhost:3003/api/users/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "root33",
+    "name": "Superuser",
+    "password": "salainen"
+}
