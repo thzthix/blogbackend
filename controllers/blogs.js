@@ -56,27 +56,17 @@ blogsRouter.put('/:id', middleware.userExtractor, async (request, response) => {
   if (!user) {
     return response.status(401).json({ error: 'token invalid' })
   }
-  const blog = await Blog.findById(request.params.id)
-  if (blog.user.toString() === user._id.toString()) {
-    const blog = {
-      title: body.title,
-      author: body.author,
-      url: body.url,
-      likes: body.likes,
-      user: user.id,
-    }
-    const savedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, {
-      new: true,
-    })
-    const blogIndex = user.blogs.findIndex((b) => b.id === savedBlog.id)
-    if (blogIndex !== -1) {
-      user.blogs.splice(blogIndex, 1, savedBlog)
-    }
-    await user.save()
-    response.json(savedBlog)
-    response.status(204).end()
-  } else {
-    return response.status(401).json({ error: 'only creater can delete' })
+
+  const blog = {
+    title: body.title,
+    author: body.author,
+    url: body.url,
+    likes: body.likes,
+    user: user.id,
   }
+  const savedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, {
+    new: true,
+  })
+  response.json(savedBlog)
 })
 module.exports = blogsRouter
