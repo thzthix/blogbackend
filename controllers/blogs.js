@@ -12,6 +12,24 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs)
 })
 
+blogsRouter.get('/:id', async (request, response, next) => {
+  try {
+    const blog = await Blog.findById(request.params.id).populate('user', {
+      username: 1,
+      name: 1,
+      id: 1,
+    })
+
+    if (blog) {
+      response.json(blog)
+    } else {
+      response.status(404).end()
+    }
+  } catch (error) {
+    next(error)
+  }
+})
+
 blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
   const body = request.body
 
@@ -49,24 +67,31 @@ blogsRouter.delete(
     }
   }
 )
-blogsRouter.put('/:id', middleware.userExtractor, async (request, response) => {
-  const body = request.body
+blogsRouter.put(
+  '/:id',
+  middleware.userExtractor,
+  async (request, response, next) => {
+    const { title, author, url, likes } = request.body
+    const user = request.user
+    if (!user) {
+      return response.status(401).json({ error: 'token invalid' })
+    }
 
-  const user = request.user
-  if (!user) {
-    return response.status(401).json({ error: 'token invalid' })
-  }
+    const blog = {
+      ...(title && { title }),
+      ...(author && { author }),
+      ...(url && { url }),
+      ...(likes && { likes }),
+    }
 
-  const blog = {
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes,
-    user: body.user.id,
+    try {
+      const savedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, {
+        new: true,
+      }).orFail()
+      response.json(savedBlog)
+    } catch (error) {
+      response.status(400).json({ error: 'invalid id' })
+    }
   }
-  const savedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, {
-    new: true,
-  })
-  response.json(savedBlog)
-})
+)
 module.exports = blogsRouter

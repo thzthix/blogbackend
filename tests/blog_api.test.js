@@ -15,11 +15,18 @@ beforeEach(async () => {
   const userResult = await api.post('/api/users').send(helper.initialUsers[0])
   const userId = userResult.body.id
 
-  const blogObjects = helper.initialBlogs.map((b) => {
-    return new Blog({ ...b, user: userId })
+  const loginResult = await api.post('/api/login').send({
+    username: helper.initialUsers[0].username,
+    password: helper.initialUsers[0].password,
   })
-  const blogPromiseArray = blogObjects.map((o) => o.save())
-  await Promise.all(blogPromiseArray)
+  const token = loginResult.body.token
+
+  for (let blog of helper.initialBlogs) {
+    await api
+      .post('/api/blogs')
+      .send({ ...blog, user: userId })
+      .set('Authorization', `Bearer ${token}`)
+  }
 })
 test('blogs are returned as json', async () => {
   await api
@@ -183,7 +190,6 @@ describe('update of a note', () => {
       .set('Authorization', `Bearer ${token}`)
       .send(updatedContent)
 
-    console.log(response.body)
     const blogsAtEnd = await helper.blogsInDb()
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
 
@@ -198,6 +204,7 @@ describe('update of a note', () => {
     const token = await helper.loginUser(userToLogin)
     const blogsAtStart = await helper.blogsInDb()
     const userId = helper.decodeToken(token)
+
     const userBlogs = blogsAtStart.filter((b) => b.user.toString() === userId)
     const blogToUpdate = userBlogs[0]
 
@@ -207,9 +214,10 @@ describe('update of a note', () => {
       url: blogToUpdate.url,
       likes: Number(blogToUpdate.likes) + 100,
     }
-
+    const nonExistingId = await helper.nonExistingId()
+    console.log(nonExistingId)
     await api
-      .put(`/api/blogs/${helper.nonExistingId}`)
+      .put(`/api/blogs/${nonExistingId}`)
       .set('Authorization', `Bearer ${token}`)
       .send(updatedContent)
       .expect(400)

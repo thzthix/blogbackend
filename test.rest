@@ -1,6 +1,7 @@
 # # # # ##
-POST  http://localhost:3003/api/blogs HTTP/1.1
+PUT  http://localhost:3003/api/blogs/65ee78de3f7e2c25e680b458 HTTP/1.1
 content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QzMyIsImlkIjoiNjVkMDIzZGQ3NmM0YjIxNTdmN2U3Yjc4IiwiaWF0IjoxNzEwMTI2MzI2fQ.ugE5NREZtaguxA4qeg7TjkPLxqEBflXlm3PMYZsF61I
 
 {
   "title": "FUBAOdd CUTE",
@@ -39,5 +40,14 @@ Content-Type: application/json
 {
     "username": "root33",
     "name": "Superuser",
+    "password": "salainen"
+}
+
+###
+POST http://localhost:3003/api/login/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "root33",
     "password": "salainen"
 }
